@@ -47,6 +47,57 @@ def call_without_video():
     total_bytes = total_bytes * 6
     print("Volume de données échangées pendant l'appel Skype sans vidéo : ", total_bytes, "bytes/min")
     print("Nombre de paquets échangés pendant l'appel Skype sans vidéo : ", nb_packets, "paquets/min")
+    print("")
+
+    capture.close()
+
+def call_with_video_local():
+    capture = pyshark.FileCapture('captures/local_video_call.pcapng', display_filter="udp and ip.addr==172.16.177.128")
+
+    total_bytes = 0
+    start_time = 7
+    end_time = start_time + 10 # temps de l'échantillon start time + 10 secondes
+    nb_packets = 0
+    
+    for packet in capture:
+        time = float(packet.frame_info.time_relative)
+        if time > start_time and time < end_time:
+            nb_packets += 1
+            total_bytes += int(packet.length)
+
+    
+    nb_packets = nb_packets * 6
+
+    print("Volume de données échangées pendant l'appel Skype avec vidéo local: ", total_bytes, "bytes")
+    total_bytes = total_bytes * 6
+    print("Volume de données échangées pendant l'appel Skype avec vidéo local: ", total_bytes, "bytes/min")
+    print("Nombre de paquets échangés pendant l'appel Skype avec vidéo local: ", nb_packets, "paquets/min")
+    print("")
+
+    capture.close()
+
+
+def call_without_video_local():
+    capture = pyshark.FileCapture('captures/local_voice_call.pcapng', display_filter="udp and ip.addr==172.16.177.128")
+
+    total_bytes = 0
+    start_time = 6
+    end_time = start_time + 10 # temps de l'échantillon start time + 10 secondes
+    nb_packets = 0
+
+    for packet in capture:
+        time = float(packet.frame_info.time_relative)
+        if time > start_time and time < end_time:
+            nb_packets += 1
+            total_bytes += int(packet.length)
+
+    nb_packets = nb_packets * 6
+        
+    print("Volume de données échangées pendant l'appel Skype sans vidéo local: ", total_bytes, "bytes")
+    total_bytes = total_bytes * 6
+    print("Volume de données échangées pendant l'appel Skype sans vidéo local : ", total_bytes, "bytes/min")
+    print("Nombre de paquets échangés pendant l'appel Skype sans vidéo local: ", nb_packets, "paquets/min")
+    print("")
 
     capture.close()
 
@@ -108,8 +159,10 @@ def create_pie_chart(capture_file, src_ip):
     plt.show()
 
 if __name__ == "__main__":
-    # call_with_video()
-    # call_without_video()
-    #get_destination_ip()
+    call_with_video()
+    call_without_video()
+    call_with_video_local()
+    call_without_video_local()
+
     #create_pie_chart('captures/call_full_supernode.pcapng', "172.16.177.129")
-    create_pie_chart('captures/video_call_2.pcapng', "172.16.177.128")
+    #create_pie_chart('captures/video_call_2.pcapng', "172.16.177.128")
